@@ -1,0 +1,26 @@
+{
+  "skill_name": "plan-and-execute-by-subagent",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我有一个微服务架构设计文档（在 references/design_doc_microservices.md），定义了 8 个微服务，包括用户服务、商品服务、订单服务、支付服务、配送服务、评价服务、通知服务和报表服务。\n\n要求：根据这份设计文档，为所有 8 个微服务生成完整的代码框架，包括：\n1. Entity/Model 类（根据设计文档中定义的数据模型）\n2. DTO/VO 对象\n3. Repository 接口（包含基础 CRUD 方法）\n4. Service 接口和实现类\n5. REST Controller 类\n6. 配置文件（application.yml、application-dev.yml、application-test.yml、application-prod.yml）\n7. 常量定义文件\n8. 异常定义文件\n9. 测试类（Repository、Service、Controller 各一份）\n\n项目信息：\n- 项目路径：/tmp/microservices-project\n- 编程语言：Java 17\n- 框架：Spring Boot 3.0\n- 构建工具：Maven\n\n验收标准：\n- 生成 336+ 个文件\n- 所有 Entity 类应包含 @Entity 注解、@Id 主键、及设计文档中定义的所有字段\n- Repository 接口继承 JpaRepository\n- Service 实现类包含 @Transactional 事务注解\n- Controller 使用 @RestController 和对应的 @GetMapping、@PostMapping 注解\n- 配置文件包含数据库、日志、Eureka 注册中心、Config Server 的配置项\n- 所有代码应遵循包结构规范和命名约定\n- 生成完成后输出文件清单和执行统计",
+      "expected_output": "完整的微服务项目结构，包含 336+ 个 Java、XML 和 YAML 文件，按照 src/main/java/com/example/{service-name}/{module}/ 的包结构组织，以及对应的测试文件在 src/test/java/ 下。生成报告应列出：成功创建的服务数、每个服务的文件数量、配置文件状态、测试覆盖率等。",
+      "files": ["/Users/wangbinquan/Documents/proj/skill/.claude/skills/plan-and-execute-by-subagent/references/design_doc_microservices.md"]
+    },
+    {
+      "id": 2,
+      "prompt": "我有一个多租户 SaaS 平台设计文档（在 references/design_doc_saas_platform.md），这是一个数据分析和报表平台，需要生成大规模的代码框架。\n\n设计文档中定义了 10 个核心模块：\n1. 多租户管理\n2. 数据集管理\n3. 仪表板\n4. 报表\n5. 数据查询与分析\n6. 用户与权限\n7. 通知与告警\n8. 系统管理与监控\n9. 配置与初始化\n10. 工具与库\n\n要求：根据设计文档生成完整的项目代码框架，包括：\n1. 所有模块的 models.py（SQLAlchemy 模型）\n2. schemas.py（Pydantic Schema，即 DTO）\n3. repository.py（数据访问层）\n4. service.py（业务逻辑层）\n5. router.py（FastAPI 路由）\n6. 模块特定的异常类、常量定义、工具函数\n7. 单元测试文件（test_models.py、test_service.py、test_router.py）\n8. 数据库迁移脚本\n9. 配置文件（config.py、config-dev.yaml、config-test.yaml、config-prod.yaml）\n10. 容器和部署配置（Dockerfile、docker-compose.yml、deployment.yaml）\n11. 共享工具库（utils/ 下的各类工具）\n12. 中间件、装饰器、全局异常处理等核心基础设施\n\n项目信息：\n- 项目路径：/tmp/saas-analytics-platform\n- 编程语言：Python 3.11\n- 框架：FastAPI\n- 数据库：PostgreSQL\n- 异步任务：Celery + Redis\n\n验收标准：\n- 生成 480+ 个文件\n- 所有模型应继承 Base（SQLAlchemy declarative base）\n- Schema 类使用 Pydantic BaseModel\n- Service 类使用 Dependency Injection 模式\n- Router 使用 APIRouter，支持异步操作\n- 所有异步任务应定义为 Celery Task\n- 配置文件应使用 python-dotenv 和环境变量\n- 代码应遵循 PEP 8 命名规范\n- 所有模块都应有对应的测试文件\n- 生成完成后输出详细的模块统计、文件清单和结构验证报告",
+      "expected_output": "完整的 FastAPI 项目结构，包含 480+ 个 Python、YAML、JSON 和 Dockerfile 文件，按照 app/modules/{module_name}/ 的结构组织。每个模块应包含 models.py、schemas.py、repository.py、service.py、router.py、exceptions.py、constants.py 等。生成报告应包括：模块总数、每个模块的文件数、测试覆盖情况、依赖关系验证、配置完整性检查等。",
+      "files": ["/Users/wangbinquan/Documents/proj/skill/.claude/skills/plan-and-execute-by-subagent/references/design_doc_saas_platform.md"]
+    },
+    {
+      "id": 3,
+      "prompt": "我有两个设计文档（microservices.md 和 saas_platform.md），分别描述了一个微服务电商平台（336 个文件）和一个多租户分析平台（480 个文件）。\n\n要求：同时根据两份设计文档生成代码。这是一个复杂的大规模任务，需要智能地分配任务并避免上下文腐化。\n\n具体要求：\n1. 首先规划出所有需要生成的任务\n2. 将任务按依赖关系分层（基础层、数据访问层、业务逻辑层、API 层等）\n3. 每 5 个任务分配给一个子代理执行\n4. 同一层级内的批次应并行执行\n5. 不同层级间应串行执行\n6. 每个子代理完成后更新计划文档的执行状态\n7. 所有子代理完成后进行全面审核，确保所有 816+ 个文件都已成功生成\n8. 如果有失败的任务，返回执行阶段进行重试\n\n项目信息：\n- 微服务项目路径：/tmp/microservices-project\n- SaaS 平台项目路径：/tmp/saas-analytics-platform\n- 微服务技术栈：Java 17 + Spring Boot 3.0 + Maven\n- SaaS 技术栈：Python 3.11 + FastAPI + PostgreSQL\n\n验收标准：\n- 两个项目都应生成 100% 的设计文档中定义的文件\n- 微服务项目：336 个文件\n- SaaS 项目：480 个文件\n- 总计：816+ 个文件\n- 所有文件应遵循各自技术栈的最佳实践和代码规范\n- 最多进行 3 轮重试，如果仍有失败则停止并报告\n- 生成最终的执行报告，包括任务统计、成功率、执行时间、任何需要人工介入的问题等",
+      "expected_output": "两个完整的项目结构（microservices-project 和 saas-analytics-platform），共生成 816+ 个文件。其中微服务项目包含 336 个 Java/XML/YAML 文件，SaaS 项目包含 480 个 Python/YAML/JSON 文件。最终报告应包括：总任务数、成功完成数、失败数、重试次数、执行总耗时、以及两个项目的详细统计数据。",
+      "files": [
+        "/Users/wangbinquan/Documents/proj/skill/.claude/skills/plan-and-execute-by-subagent/references/design_doc_microservices.md",
+        "/Users/wangbinquan/Documents/proj/skill/.claude/skills/plan-and-execute-by-subagent/references/design_doc_saas_platform.md"
+      ]
+    }
+  ]
+}

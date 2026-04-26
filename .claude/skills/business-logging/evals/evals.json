@@ -1,0 +1,26 @@
+{
+  "skill_name": "business-logging",
+  "evals": [
+    {
+      "id": 1,
+      "name": "review-java-auth-service-sensitive-leak",
+      "prompt": "帮我 review 一下 src/main/java/com/acme/auth/AuthService.java 的日志，我怀疑有敏感信息泄漏、级别用得不太对。仓库用的是 logback + slf4j（自建了 com.acme.logging.AppLogger 包装，内部调 LoggerFactory，已配置 logback.xml 输出 JSON，logback pattern 里有 %X{trace_id} %X{user_id} 两个 MDC 字段）。这段代码里有 login / refreshToken / resetPassword 三个方法，目前大概长这样：\n```\n@Slf4j\npublic class AuthService {\n    public LoginResult login(String email, String password) {\n        log.info(\"🔐 login attempt email=\" + email + \" password=\" + password);\n        try {\n            User u = repo.findByEmail(email);\n            if (u == null) { log.error(\"user not found\"); return LoginResult.fail(\"NOT_FOUND\"); }\n            if (!bcrypt.matches(password, u.getPasswordHash())) {\n                log.error(\"wrong password for \" + email);\n                return LoginResult.fail(\"BAD_CRED\");\n            }\n            String token = jwt.sign(u);\n            log.info(\"=== LOGIN SUCCESS === user=\" + u + \" token=\" + token);\n            return LoginResult.ok(token);\n        } catch (Exception e) {\n            log.error(e.getMessage());\n            return LoginResult.fail(\"ERR\");\n        }\n    }\n    public void resetPassword(String email, String newPwd) {\n        log.info(\"reset password email={} new={}\", email, newPwd);\n        repo.updatePwd(email, bcrypt.hash(newPwd));\n    }\n}\n```\n帮我按问题级别排出要改的地方，给出 before/after。",
+      "expected_output": "问题清单（按 P0/P1/P2 排序）+ 逐条 before/after 改动；至少要识别：password 明文进 INFO（P0）、token 全量进 INFO（P0）、resetPassword 把新密码 newPwd 打出来（P0）、'error' 级别用错（用户输入错误不该 ERROR）、emoji 与装饰横幅要清除、拼接改占位符、catch 只打 getMessage 丢栈、user 直接 toString 可能含敏感字段、trace_id 已在 MDC pattern 里所以业务代码无需手工带。必须使用现有 AppLogger/slf4j，不引入新框架；所有消息英文、无 emoji。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "add-logs-python-order-create",
+      "prompt": "这段 Python 代码完全没有日志，帮我补齐。项目是 FastAPI 服务，logger 是 logging.getLogger(__name__)，app/logging_config.py 里已经用 pythonjsonlogger 配了 JSON 输出，middleware 在每次请求进来时把 X-Trace-Id 塞进 contextvar 并通过一个 Filter 注入到 LogRecord.trace_id 字段。不要引入 structlog / loguru。\n```python\nasync def create_order(req: CreateOrderRequest, user: CurrentUser) -> OrderResponse:\n    t0 = time.time()\n    inventory_ok = await inventory_client.reserve(req.sku_id, req.qty)\n    if not inventory_ok:\n        raise HTTPException(409, 'out of stock')\n    order = await order_repo.create(user_id=user.id, sku_id=req.sku_id, qty=req.qty, amount=req.amount)\n    try:\n        await mq_client.publish('order.created', {'order_id': order.id, 'user_id': user.id})\n    except Exception:\n        pass  # MQ 挂了先不中断主流程\n    return OrderResponse.from_orm(order)\n```\n给我加日志。",
+      "expected_output": "在受理请求、库存预扣、订单落库、事件投递成功/失败、整体耗时关键节点都加日志；复用 logging.getLogger；消息全英文、无 emoji；用 extra= 传 user_id/sku_id/qty/amount/order_id/duration_ms；MQ 失败的 except 不得 pass，改为 logger.exception 或 logger.error(exc_info=True) 并视业务决定是否重抛；主流程异常也应记录；amount 若被视作敏感可只打 order_id 或保留数值（用户默认示例中 amount 不算 PII）；不引入 structlog / loguru。",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "review-and-add-go-payment-service",
+      "prompt": "帮我审视 + 补齐这段 Go 代码的日志。服务是单独的 payment 微服务，项目已经用 go.uber.org/zap（main 里 logger := zap.Must(zap.NewProduction())），有自己的 pkg/logger 封装：logger.FromContext(ctx) 从 context 取 *zap.Logger（已注入 trace_id/request_id 字段）。以下代码有的日志写得不好，有的地方根本没有日志：\n```go\nfunc (s *PaymentService) Charge(ctx context.Context, orderID int64, cardNo string, cvv string, amount decimal.Decimal) error {\n    fmt.Printf(\"charging order %d card %s cvv %s\\n\", orderID, cardNo, cvv)\n    resp, err := s.gateway.Submit(ctx, cardNo, cvv, amount)\n    if err != nil {\n        log.Printf(\"gateway err: %v\", err)\n        return err\n    }\n    if resp.Status != \"OK\" {\n        fmt.Println(\"not ok: \" + resp.Status)\n        return errors.New(\"rejected\")\n    }\n    for _, evt := range resp.Events {\n        s.bus.Emit(ctx, evt)\n        fmt.Printf(\"emitted %s\\n\", evt.Name)\n    }\n    return nil\n}\n```\n规则：复用项目的 zap logger（通过 FromContext(ctx)），英文、结构化，不引入新依赖；帮我给出 review 报告 + 最终代码。",
+      "expected_output": "P0：cardNo/cvv 全量打印 + fmt.Printf/log.Printf 绕过 logger；P1：每事件一条 fmt.Printf（循环内噪声）；网关失败没有业务上下文；应改用 logger.FromContext(ctx)、zap K-V 字段（zap.Int64('order_id'), zap.String('card_tail', last4), zap.String('status', ...)），用 fmt.Errorf('...: %w', err) 包装 cause，业务事件 emit 改为按批汇总 INFO + 失败单独 WARN；必须复用项目 zap，不引入新框架；最终代码消除 fmt.Printf/log.Printf 旁路。",
+      "files": []
+    }
+  ]
+}

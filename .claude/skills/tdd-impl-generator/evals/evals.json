@@ -1,0 +1,44 @@
+{
+  "skill_name": "tdd-impl-generator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我有一个 Java 的用户服务骨架代码（UserService.java），里面有 4 个方法的 TODO 实现，另外还有需求文档和软件设计文档。请帮我把 TODO 填完，生成完整的业务逻辑实现，要求每个代码块都有注释说明为什么这样实现。文件路径：evals/files/java_skeleton/UserService.java，需求文档：evals/files/java_skeleton/requirements.md，设计文档：evals/files/java_skeleton/design.md",
+      "expected_output": "UserService.java 中所有 TODO 被真实业务逻辑填充，每个方法有'实现决策记录'格式的 JavaDoc，方法体内有解释 WHY 的内联注释，分步骤注释块（=== Step N: 标题 ===），方法签名未被修改",
+      "files": [],
+      "expectations": [
+        "所有 TODO 注释被真实代码替换（文件中不再有 TODO: Step 字样）",
+        "每个已实现方法都有包含'实现策略'或'业务规则落地'段落的 JavaDoc 注释",
+        "方法体中存在 === Step N: 格式的分步骤注释块",
+        "方法签名（参数类型、返回类型、访问修饰符）与骨架保持完全一致",
+        "注释内容引用了需求文档或设计文档中的约束（含文档编号或章节引用）"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "这是一个 Go 语言的订单服务项目，我已经有了骨架代码 order_service.go，里面的方法都是 unimplemented 占位，现在需要根据 PRD 文档（product_requirements.md）和架构文档（architecture.md）实现完整的业务逻辑。特别注意：有一个 CalculateDiscount 方法涉及复杂的折扣规则，需要详细注释每个规则的业务来源。文件都在 evals/files/go_order/ 目录。",
+      "expected_output": "order_service.go 中所有方法的 unimplemented 占位被真实实现替换，方法签名保留，每个方法有符合 GoDoc 规范的注释（含实现策略、业务规则落地、错误处理策略），CalculateDiscount 方法的每条折扣规则有注释说明来源，error 使用 %w 包装",
+      "files": [],
+      "expectations": [
+        "order_service.go 中不再包含 unimplemented 或 panic(not implemented) 字样",
+        "每个已实现函数有包含'实现策略'或'业务规则落地'的 GoDoc 注释",
+        "error 处理使用 fmt.Errorf 配合 %w 进行包装（保留错误链）",
+        "CalculateDiscount 方法中每条折扣规则有内联注释说明业务来源",
+        "context.Context 作为第一个参数传递给所有 I/O 操作"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "我正在用 Python 做一个支付处理模块，骨架代码（payment_processor.py）已经有了，单元测试文件（test_payment_processor.py）也写好了，但现在测试全部失败因为方法都是 raise NotImplementedError。请根据需求文档（payment_requirements.md）实现业务逻辑，确保所有测试能通过，每个关键决策都要有注释说明为什么。",
+      "expected_output": "payment_processor.py 中所有 NotImplementedError 被真实实现替换，方法签名与骨架一致，有 Google Docstring 格式注释（含实现策略、业务规则落地），关键决策有内联 WHY 注释，单元测试全部通过",
+      "files": [],
+      "expectations": [
+        "payment_processor.py 中不再包含 NotImplementedError 字样",
+        "每个已实现方法有 Google Docstring 格式注释，含'实现策略'和'业务规则落地'段落",
+        "方法签名（参数类型标注、返回类型标注）与骨架保持完全一致",
+        "业务规则相关的代码行有内联注释说明约束来源",
+        "如有单元测试文件，实现代码的行为与测试断言一致（无签名变更导致的 TypeError）"
+      ]
+    }
+  ]
+}

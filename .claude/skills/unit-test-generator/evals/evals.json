@@ -1,0 +1,23 @@
+{
+  "skill_name": "unit-test-generator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "请为下面这个 Python 函数生成单元测试：\n\n```python\ndef divide(a: float, b: float) -> float:\n    \"\"\"两数相除，b 为零时抛出 ValueError\"\"\"\n    if b == 0:\n        raise ValueError(\"除数不能为零\")\n    return a / b\n```",
+      "expected_output": "先输出 UT 设计文档（含正常/异常/边界场景），确认后输出带中文注释的 pytest 测试代码，覆盖：正常除法、除数为零、边界值（0、负数、浮点精度）等场景",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "我有一个 Golang 的用户服务，帮我写单元测试：\n\n```go\ntype UserService struct {\n    repo UserRepository\n}\n\nfunc (s *UserService) GetUser(ctx context.Context, id int64) (*User, error) {\n    if id <= 0 {\n        return nil, errors.New(\"无效的用户ID\")\n    }\n    user, err := s.repo.FindByID(ctx, id)\n    if err != nil {\n        return nil, fmt.Errorf(\"查询用户失败: %w\", err)\n    }\n    if user == nil {\n        return nil, fmt.Errorf(\"用户 %d 不存在\", id)\n    }\n    return user, nil\n}\n```",
+      "expected_output": "输出 UT 设计文档，然后生成表驱动测试风格的 Go 测试代码，使用 testify 框架，包含中文注释，覆盖：正常查询、ID 无效（边界值）、用户不存在、仓库层报错等场景",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "帮我为这个 Java 订单服务写全面的单元测试，要覆盖各种场景：\n\n```java\n@Service\npublic class OrderService {\n    private final OrderRepository orderRepository;\n    private final InventoryService inventoryService;\n    private final PaymentService paymentService;\n\n    public Order createOrder(CreateOrderRequest request) {\n        // 校验库存\n        if (!inventoryService.checkStock(request.getProductId(), request.getQuantity())) {\n            throw new InsufficientStockException(\"库存不足\");\n        }\n        // 执行支付\n        PaymentResult payment = paymentService.charge(request.getUserId(), request.getTotalAmount());\n        if (!payment.isSuccess()) {\n            throw new PaymentFailedException(\"支付失败: \" + payment.getFailReason());\n        }\n        // 创建订单\n        Order order = new Order(request);\n        order.setPaymentId(payment.getPaymentId());\n        return orderRepository.save(order);\n    }\n}\n```",
+      "expected_output": "输出完整 UT 设计（含正常/异常/边界/性能场景），然后生成 JUnit 5 + Mockito + AssertJ 测试代码，所有注释使用中文，Mock 三个依赖（仓库/库存/支付），覆盖所有业务分支",
+      "files": []
+    }
+  ]
+}

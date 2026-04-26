@@ -1,0 +1,266 @@
+{
+  "skill_name": "tdd-code-skeleton",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我正在做一个Java电商系统的TDD开发。设计文档里有如下类图：\n\nOrderService (class, implements IOrderService):\n- fields: orderRepository: OrderRepository, paymentGateway: PaymentGateway, eventBus: EventBus\n- createOrder(userId: String, items: List<CartItem>): OrderId\n- cancelOrder(orderId: OrderId): void\n- getOrderById(orderId: OrderId): Optional<OrderDTO>\n- processPayment(orderId: OrderId, paymentInfo: PaymentInfo): PaymentResult\n- getOrdersByUserId(userId: String): List<OrderDTO>\n\nIOrderService (interface):\n- 同上5个方法\n\n需求背景：订单创建需要检查库存，支付要防止并发重复扣款，取消只能在PENDING_PAYMENT状态进行。\n\n请帮我生成这两个类的Java代码骨架。",
+      "expected_output": "生成IOrderService接口和OrderService类的完整Java代码骨架，包含：1) 完整的JavaDoc（类级包含设计思路、实现思路、主要依赖、线程安全性、设计约束；方法级包含实现思路、分步骤实现步骤、参数、返回值、异常）；2) 方法体只有精确的分步骤TODO注释，无业务实现代码；3) 空方法返回null/false/0等合法占位值",
+      "files": [],
+      "assertions": [
+        {
+          "id": "A1",
+          "name": "包含IOrderService接口",
+          "description": "输出中存在 IOrderService 接口定义",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "IOrderService"
+        },
+        {
+          "id": "A2",
+          "name": "包含OrderService类",
+          "description": "输出中存在 OrderService 类定义",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "OrderService"
+        },
+        {
+          "id": "A3",
+          "name": "方法体只有TODO无业务逻辑",
+          "description": "方法体内不包含实际业务逻辑代码（如 if/for/database 调用），只有 TODO 注释和 return null",
+          "type": "no_business_logic_in_method_body",
+          "target": "with_skill"
+        },
+        {
+          "id": "A4",
+          "name": "类级JavaDoc包含实现思路",
+          "description": "类级注释中包含"实现思路"或"设计思路"描述",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "实现思路|设计思路|Implementation"
+        },
+        {
+          "id": "A5",
+          "name": "方法级注释包含有序步骤",
+          "description": "方法体 TODO 注释包含"Step"或"步骤"编号",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "Step [0-9]|步骤[0-9１２３]"
+        },
+        {
+          "id": "A6",
+          "name": "生成了任务规划文档",
+          "description": "with_skill 版本生成了任务清单或规划文档（tdd-skeleton-tasks 或类似内容）",
+          "type": "has_planning_document",
+          "target": "with_skill"
+        },
+        {
+          "id": "A7",
+          "name": "任务规划包含实现的业务逻辑",
+          "description": "规划文档或 response.md 中包含"实现的业务逻辑"字段描述",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "实现的业务逻辑"
+        },
+        {
+          "id": "A8",
+          "name": "空方法返回合法占位符",
+          "description": "非 void 方法返回 null 或其他合法占位值，不是直接空方法体",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "return null|return 0|return false|return Optional"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "我们团队在做一个Python数据处理服务，采用TDD开发方式。需要在写测试之前先生成代码框架。\n\n需求文档说明：\n- DataPipelineService：负责从多个数据源拉取数据、做清洗转换、然后写入目标存储\n- 支持CSV、JSON、Parquet三种数据格式\n- 需要支持数据校验（schema validation）\n- 清洗步骤包括去重、空值填充、类型转换\n- 目标存储支持写入PostgreSQL或S3\n\n没有详细类图，请根据需求推断合理的类设计并生成Python代码框架（要求有类型标注）。",
+      "expected_output": "先展示推断出的类结构清单供确认，然后生成Python代码骨架。要求：1) 每个类使用Google风格docstring，包含设计思路、实现思路、参数/返回值/异常说明；2) 方法体只有分步骤TODO注释（格式：# TODO: Step N - 名称 / #   - 具体内容）；3) 正确使用Python类型标注；4) 抽象基类使用ABC；5) 推断的类标注[需求推断，待确认]",
+      "files": [],
+      "assertions": [
+        {
+          "id": "B1",
+          "name": "包含DataPipelineService类",
+          "description": "输出中存在 DataPipelineService 类",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "DataPipelineService"
+        },
+        {
+          "id": "B2",
+          "name": "使用类型标注",
+          "description": "Python代码中使用了类型标注（-> 或 : 类型）",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "-> |: List|: Optional|: Dict|: str|: int|: bool"
+        },
+        {
+          "id": "B3",
+          "name": "包含Google风格docstring",
+          "description": "方法包含 Google 风格 docstring（Args:/Returns:/Raises:）",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "Args:|Returns:|Raises:"
+        },
+        {
+          "id": "B4",
+          "name": "方法体TODO步骤编号",
+          "description": "方法体 TODO 注释包含"Step N"格式",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "TODO: Step [0-9]"
+        },
+        {
+          "id": "B5",
+          "name": "使用ABC抽象基类",
+          "description": "代码中使用 ABC 或 abc.ABC",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "ABC|abc\\.ABC|abstractmethod"
+        },
+        {
+          "id": "B6",
+          "name": "先展示类结构清单",
+          "description": "response.md 中包含推断的类结构清单（类名列表）",
+          "type": "has_class_structure_proposal",
+          "target": "with_skill"
+        },
+        {
+          "id": "B7",
+          "name": "任务规划包含实现的业务逻辑",
+          "description": "规划文档或 response.md 中包含"实现的业务逻辑"字段",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "实现的业务逻辑"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "我在用Go语言做一个TDD项目，做的是一个权限管理系统。设计文档如下：\n\n```\nPermissionService (struct):\n- Fields: roleRepo RoleRepository, userRoleRepo UserRoleRepository, cache Cache\n- HasPermission(ctx, userId UserId, resource string, action string) (bool, error)\n- AssignRole(ctx, userId UserId, roleId RoleId) error  \n- RevokeRole(ctx, userId UserId, roleId RoleId) error\n- GetUserRoles(ctx, userId UserId) ([]RoleDTO, error)\n\nRoleRepository (interface):\n- FindById(ctx, id RoleId) (*Role, error)\n- FindByIds(ctx, ids []RoleId) ([]*Role, error)\n- Save(ctx, role *Role) (*Role, error)\n\nUserRoleRepository (interface):\n- FindByUserId(ctx, userId UserId) ([]*UserRole, error)\n- Save(ctx, userRole *UserRole) error\n- Delete(ctx, userId UserId, roleId RoleId) error\n```\n\n权限检查需要缓存（TTL 5分钟），角色变更需要清除缓存。请生成所有类/接口的Go代码骨架。",
+      "expected_output": "生成PermissionService struct、RoleRepository接口、UserRoleRepository接口的完整Go代码骨架。要求：1) GoDoc注释遵循Go规范（注释直接跟在声明前，首行以名称开头）；2) 包含模块注释、类型注释（设计思路/实现思路/线程安全性等）、方法注释（实现步骤有序列表）；3) 方法体有精确的分步骤TODO注释；4) 空方法返回零值和errors.New(\"not implemented\")",
+      "files": [],
+      "assertions": [
+        {
+          "id": "C1",
+          "name": "包含PermissionService struct",
+          "description": "输出中存在 PermissionService struct 定义",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "PermissionService"
+        },
+        {
+          "id": "C2",
+          "name": "包含RoleRepository和UserRoleRepository接口",
+          "description": "输出中包含两个 Repository 接口",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "RoleRepository|UserRoleRepository"
+        },
+        {
+          "id": "C3",
+          "name": "GoDoc注释首行以名称开头",
+          "description": "Go注释符合规范（// PermissionService...或// RoleRepository...）",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "// PermissionService|// RoleRepository|// UserRoleRepository"
+        },
+        {
+          "id": "C4",
+          "name": "方法返回零值和not implemented错误",
+          "description": "空方法返回 fmt.Errorf(\"not implemented\") 或 errors.New",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "not implemented|NotImplemented"
+        },
+        {
+          "id": "C5",
+          "name": "注释中提及缓存TTL",
+          "description": "注释中包含缓存 TTL 相关说明（5分钟 或 5min）",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "5.*分钟|5.*min|TTL|缓存"
+        },
+        {
+          "id": "C6",
+          "name": "TODO注释包含步骤编号",
+          "description": "方法体内 TODO 包含步骤编号",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "// TODO.*Step|// TODO.*步骤"
+        },
+        {
+          "id": "C7",
+          "name": "任务规划包含实现的业务逻辑",
+          "description": "规划或 response.md 中包含"实现的业务逻辑"字段",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "实现的业务逻辑"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我为Scala项目生成代码框架。这是一个支付对账系统，使用Future+Either函数式风格。\n\n设计说明：\nReconciliationService (trait + 实现类):\n  - reconcile(batchId: BatchId, from: LocalDate, to: LocalDate): Future[Either[ReconcileError, ReconcileReport]]\n  - getReport(batchId: BatchId): Future[Either[ReconcileError, Option[ReconcileReport]]]\n  - retryFailed(batchId: BatchId): Future[Either[ReconcileError, Int]]  // 返回重试成功数量\n\nReconcileReport (case class):\n  - batchId, totalCount, successCount, failedCount, totalAmount, createdAt\n  \n需求：对账要比较银行流水与系统订单，差异超过0.01元需要标记为异常，需要生成详细的差异报告。",
+      "expected_output": "生成ReconciliationService trait及其实现类、ReconcileReport case class的Scala代码骨架。要求：1) ScalaDoc注释包含设计思路（函数式风格说明）、实现思路（for推导式使用）、实现步骤；2) trait方法和实现类方法都有完整注释；3) case class使用伴生对象提供工厂方法；4) 方法体只有TODO注释，返回Future.successful(Left(ReconcileError.NotImplemented(...)))作为占位",
+      "files": [],
+      "assertions": [
+        {
+          "id": "D1",
+          "name": "包含ReconciliationService trait",
+          "description": "输出中包含 ReconciliationService trait 定义",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "ReconciliationService"
+        },
+        {
+          "id": "D2",
+          "name": "包含ReconcileReport case class",
+          "description": "输出中包含 ReconcileReport case class",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "case class ReconcileReport"
+        },
+        {
+          "id": "D3",
+          "name": "Future[Either[...]]返回类型",
+          "description": "方法返回类型为 Future[Either[...]]",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "Future\\[Either"
+        },
+        {
+          "id": "D4",
+          "name": "方法体返回Future.successful占位",
+          "description": "实现方法返回 Future.successful(...Left...) 作为占位",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "Future\\.successful"
+        },
+        {
+          "id": "D5",
+          "name": "伴生对象存在",
+          "description": "ReconcileReport 有伴生对象 object",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "object ReconcileReport"
+        },
+        {
+          "id": "D6",
+          "name": "ScalaDoc包含实现思路",
+          "description": "ScalaDoc 注释包含实现思路或设计思路",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "实现思路|设计思路|Implementation|函数式"
+        },
+        {
+          "id": "D7",
+          "name": "任务规划包含实现的业务逻辑",
+          "description": "规划或 response.md 中包含"实现的业务逻辑"字段",
+          "type": "contains_text",
+          "target": "with_skill",
+          "pattern": "实现的业务逻辑"
+        }
+      ]
+    }
+  ]
+}

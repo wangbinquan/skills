@@ -1,0 +1,23 @@
+{
+  "skill_name": "code-issue-reviewer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我们这个 Java 服务下周一就要上线了，是个支付对账网关，QPS 估计 2k 左右。你以 SRE 视角帮我把整个仓过一遍，把那种'凌晨三点 page 我'级别的问题挑出来，重点是空指针、资源泄漏、超时配置、还有 retry 风暴这种。最好按严重度给个清单，我直接拿去分给团队修。仓在当前目录，src/main/java 是主代码。",
+      "expected_output": "应当扫整仓 Java 代码，按 13 维度（重点 null_safety / resource_leak / external_call / error_handling）给出 finding，按 blocker/critical/major 分桶；落盘 issues.md + findings.jsonl + report.md；产物名称用 <repo-name>-code-review-* 前缀。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "最近线上 Go 服务老是 OOM，重启后能撑两三天又崩。也偶发 panic: send on closed channel。我怀疑是 goroutine 泄漏 + channel 用错。能不能整体扫一下代码看看有没有这种隐患？还有什么类似坑也一起列出来。",
+      "expected_output": "聚焦 Go 项目，重点维度 memory（无界缓冲）、resource_leak（goroutine 泄漏）、concurrency（channel close panic / map race）；按文件批次分析；指出 defer in loop / context 缺失 / channel 关闭多生产者 / sync.Map 误用等典型模式；落盘三件套；不主动调 business-logging / tdd-impl-runner。",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "production readiness check please — this is a TypeScript Node.js backend, mostly Express + TypeORM + Redis. We've had a couple of cascading outages from third-party API hiccups. Want a thorough sweep for missing timeouts, missing retries with backoff, unhandled promise rejections, anything that looks like it could take the whole service down when one dependency is slow. Also if you spot N+1 query patterns flag those too.",
+      "expected_output": "TS/JS 项目检测；重点 external_call（fetch/axios timeout）、error_handling（floating promises / unhandled rejection）、performance（N+1 query in TypeORM）、resilience；按 13 维度走但严重度集中在级联故障路径；report 中列出每个 HTTP 客户端是否设 timeout；不深审安全。",
+      "files": []
+    }
+  ]
+}

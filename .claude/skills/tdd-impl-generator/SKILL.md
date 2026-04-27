@@ -10,6 +10,7 @@ description: TDD 实现阶段：读取代码骨架（含 TODO 注释）+ 需求/
 读取代码骨架（通常由 `tdd-code-skeleton` 生成），结合需求与设计文档，**生成符合测试契约的完整业务实现**。
 
 **核心原则**：
+- **🚨 强制 subagent 派发（最高优先级硬约束）**：本 skill 的实现计划阶段（阶段 1）与所有批次实现（阶段 4）**必须通过 `Task` / `Agent` 工具显式派发独立 subagent 执行**，主上下文**严禁自行 Read 骨架与设计文档全文 / 自行 Write 计划文档 / 自行 Edit 骨架文件填 TODO**。即使"看起来只剩一两个方法"也不得绕过——主上下文只做调度、回写、TODO 终检、反思补发，**写代码、读全量骨架、改文件全部交给 subagent**。判定违规的客观信号：本应派发 subagent 的步骤里出现了主上下文的 Read 骨架文件正文 / Write 计划文档 / Edit 骨架填实现等动作（除阶段 0 抽检 grep、阶段 4.3 按需 Read 计划文档 TaskID 段、阶段 4.5 回写计划文档、阶段 5 终检 grep 外）。一旦发现立即停下，改为派发 subagent 重做。
 - **主上下文精简**：实现计划阶段（读骨架、提取 TODO、建立约束索引、规划 batch、落盘）由独立 subagent 完成
 - **完整落盘**：计划文档每个 TaskID 必须齐备：骨架文件、方法签名、骨架 TODO 原文（逐字粘贴）、关联约束（C-XXX 含来源）、实现决策备注。不得省略
 - **就近落盘**：计划文档落盘到**原始设计文档（或骨架文件）同级目录**，命名 `<关键词>-tdd-impl-tasks.md`
@@ -78,6 +79,8 @@ description: TDD 实现阶段：读取代码骨架（含 TODO 注释）+ 需求/
 - **冲突**：同名已存在 → 追加 `-YYYYMMDD-HHMM`，**禁止覆盖**
 
 ### 1.3 设计 subagent prompt 模板
+
+> **🚨 派发动作硬约束**：本节的"派发"必须是**真实的 `Task` / `Agent` 工具调用**——即在主上下文的本轮回复中出现一个 `Agent` 工具块，subagent_type=`general-purpose`，把下方 prompt 整体作为 `prompt` 参数传入。**严禁**主上下文自己 Read 全部骨架文件、自己提取 TODO 清单、自己 Write 计划文档来"代替"这次派发。如果主上下文准备直接动手做这些，立即停下并改为派发 subagent。
 
 主上下文用 `Agent`（subagent_type=`general-purpose`）派发 1 个：
 
@@ -388,8 +391,10 @@ if (userRepository.existsByEmail(email)) { throw new EmailAlreadyExistsException
 
 ### 4.2 实现 subagent 调度规则
 
+> **🚨 派发动作硬约束（再次强调）**：本阶段每一个 batch **必须以一个真实的 `Task` / `Agent` 工具调用**形式发出，而**不是**主上下文自己 Read 骨架文件 + 自己 Edit 填实现。同 wave 多 batch = 同一条消息里多个 `Agent` 工具调用块并排出现。**违规判定**：本阶段中主上下文出现 `Edit` 骨架源文件、自己写入业务实现代码、或 `Read` 骨架文件正文段——立即停下，回退到本节重新以 subagent 形式派发。**例外**：4.3 的"按需 Read 计划文档 TaskID 段"、4.5 的"回写计划文档" 与 "TODO 残留 grep 二次校验"、阶段 5 的终检 grep 是允许的主上下文动作。
+
 1. **按 wave 派发**：Read 计划"批次计划"表（只读这段），一次发整 wave 全部 batch（5~8 并行）
-2. **同消息内并行**：同 wave 全部 subagent 在同一条消息中发起多个 Agent 块
+2. **同消息内并行**：同 wave 全部 subagent 在同一条消息中发起多个 `Agent` 工具调用块（注意：**必须真实调用 `Agent` 工具**，而非主上下文文字描述"派发了 N 个 subagent"）
 3. **每 subagent 自包含**：subagent 看不到会话历史
 4. **一个 subagent = 一个 batch = 5~10 方法**（按复杂度缩放），可跨 1~N 个文件（遵循文件锁）
 5. **wave 屏障**：本 wave 全返回前不派发下一 wave

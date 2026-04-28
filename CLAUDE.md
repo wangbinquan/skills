@@ -41,9 +41,9 @@ commit-change-summarizer        (HEAD diff + design → review-grade Chinese sum
             calls: software-diagram
 ```
 
-Cross-cutting skills: `business-logging` (audit/instrument logs in 8 langs without introducing a new logging framework), `software-diagram` (Mermaid/PlantUML with self-validation), `plan-and-execute-by-subagent` (generic large-scale codegen via 5-task subagent fan-out), `skill-creator` (this repo's meta-tool — also see `evals/` workflow below).
+Cross-cutting skills: `code-issue-reviewer` (SRE-style full-repo scan across 13 stability dimensions — null-safety, resource leaks, concurrency, performance, memory, error handling, external-call resilience, boundaries, observability, config, data consistency, time/encoding, API compat — **audit-only, never edits code**, has no agent wrapper, runs as a direct `/code-issue-reviewer` invocation; security findings are flagged with a pointer to `/security-review` rather than analyzed in depth), `business-logging` (audit/instrument logs in 8 langs without introducing a new logging framework), `software-diagram` (Mermaid/PlantUML with self-validation), `plan-and-execute-by-subagent` (generic large-scale codegen via 5-task subagent fan-out), `skill-creator` (this repo's meta-tool — also see `evals/` workflow below).
 
-**Hard rule of the pipeline**: each runner agent invokes only the one skill named in its frontmatter. Do not extend a runner to call additional skills — that responsibility belongs to a different runner, or to the user composing them.
+**Hard rule of the pipeline**: each runner agent invokes only the one skill named in its frontmatter. Do not extend a runner to call additional skills — that responsibility belongs to a different runner, or to the user composing them. `code-issue-reviewer` is intentionally agent-less for the same reason: it must not auto-trigger downstream skills.
 
 ## Naming convention for generated artifacts
 
@@ -55,9 +55,10 @@ All pipeline-stage outputs land **next to the originating design/requirement doc
 - `<keyword>-tdd-impl-tasks.md`
 - `<keyword>-ut-design.md`
 - `<keyword>-design-code-review.md`
+- `<keyword>-code-review-issues.md`
 - `<keyword>-commit-summary-<short-hash>.md`
 
-These filenames are also the **resume markers**: every skill checks for its own `*-tasks.md` / `*-design.md` / `*-review.md` in the target directory and continues from `pending` rows instead of redoing the design phase. Preserve the suffix exactly when editing skill prompts — the resume detection is filename-pattern based.
+These filenames are also the **resume markers**: every skill checks for its own `*-tasks.md` / `*-design.md` / `*-review.md` / `*-issues.md` in the target directory and continues from `pending` rows instead of redoing the design phase. Preserve the suffix exactly when editing skill prompts — the resume detection is filename-pattern based. Note: `code-issue-reviewer` looks for `*-code-review-issues.md` at the **repo root** (not next to a design doc, since its input is the whole repo), unlike the pipeline-stage skills.
 
 ## Conventions when editing skills
 
@@ -67,6 +68,7 @@ These filenames are also the **resume markers**: every skill checks for its own 
 - **`tdd-impl-generator` enforces a TODO-zero-residue terminal grep** for `TODO|FIXME|XXX|HACK|unimplemented`. Do not weaken this; subagent self-check + main-context grep are both required.
 - **`business-logging` forbids introducing a new logging framework**. The skill must locate the project's existing logger first; log messages must be English with no emoji/decorative banners. Preserve both rules verbatim if rewording.
 - **`software-diagram` requires a self-validation pass** (`scripts/validate_diagram.sh`) and Chinese `note` annotations on every PlantUML output. Both are non-negotiable in the skill body.
+- **`code-issue-reviewer` is audit-only.** It must not modify source code, must not auto-invoke other skills/agents, and must defer security findings to `/security-review` rather than analyzing them in depth. Its 13 dimensions and 5-severity matrix live in `references/dimensions.md` + `references/severity.md` — keep these in sync with what the SKILL.md description advertises.
 
 ## Keeping `.claude/agents/` and `.opencode/agents/` in sync
 

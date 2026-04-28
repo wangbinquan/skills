@@ -4,8 +4,8 @@
 
 本仓库**不是应用代码**，而是一组可复用的 AI 工程化资产：
 
-- 8 个 Skill（`.claude/skills/`）：每个 Skill 自带按语言加载的参考资料（references），覆盖 Java / C++ / Scala / Python / Go / Rust / JavaScript / TypeScript 八种语言。
-- 6 个 Sub-agent（`.claude/agents/` 与 `.opencode/agents/` 双份同步）：每个 agent 是一个 Skill 的"专职壳"，负责把用户意图路由到对应 Skill。
+- 9 个 Skill（`.claude/skills/`）：每个 Skill 自带按语言加载的参考资料（references），覆盖 Java / C++ / Scala / Python / Go / Rust / JavaScript / TypeScript 八种语言。
+- 6 个 Sub-agent（`.claude/agents/` 与 `.opencode/agents/` 双份同步）：每个 agent 是一个 Skill 的"专职壳"，负责把用户意图路由到对应 Skill（横切型 Skill 如 `code-issue-reviewer` 直接 `/<skill-name>` 调起，不走 agent）。
 - 1 份 OpenCode 插件 Hook 完整参考文档（`wiki/opencode_plugin.md`）。
 
 ---
@@ -32,6 +32,7 @@
 | `*-tdd-impl-tasks.md` | TDD 实现任务清单 |
 | `*-ut-design.md` | 单测设计文档 |
 | `*-design-code-review.md` | 设计-代码一致性审计 |
+| `*-code-review-issues.md` | SRE 视角代码问题检视 |
 | `*-commit-summary-<short-hash>.md` | 提交变更总结 |
 
 每个 Skill 启动时先扫描目标目录的同名文件，存在则**按 pending 项续作**而不是重做设计阶段。中断后重启零成本。
@@ -77,6 +78,7 @@
 
 横切能力：
 
+- **code-issue-reviewer**：SRE 视角全仓扫描 13 大稳定性维度（空值 / 资源泄漏 / 并发 / 性能 / 内存 / 错误处理 / 外部调用韧性 / 边界 / 可观测性 / 配置 / 数据一致性 / 时间编码 / API 兼容），**只审计、不改代码**，安全维度引导用户走 `/security-review`。与 `design-code-consistency-checker` 平行——后者管"设计的有没有做"，本 skill 管"做出来的代码本身有没有踩坑"。
 - **business-logging**：审视/补全/新增商业系统业务日志，**严禁引入新日志框架**，日志一律英文、无 emoji。
 - **software-diagram**：Mermaid / PlantUML 多种图形，PlantUML 强制中文 note，输出前自动跑校验脚本。
 - **plan-and-execute-by-subagent**：通用大规模代码生成的 5-task subagent 模板。
@@ -94,6 +96,8 @@
 │   │   │   ├── SKILL.md              # 触发契约（frontmatter description）+ 工作流
 │   │   │   ├── references/{java,cpp,python,go,rust,scala,javascript,typescript}.md
 │   │   │   └── evals/                # 触发准确率与质量评测样本
+│   │   ├── code-issue-reviewer/      # SRE 视角 13 维代码问题检视（只审计不改）
+│   │   │   └── references/{...,dimensions.md, severity.md, report-templates.md}
 │   │   ├── design-code-consistency-checker/
 │   │   │   └── references/{...,severity.md, dimensions.md, report-templates.md}
 │   │   ├── plan-and-execute-by-subagent/
@@ -118,7 +122,7 @@
 
 ---
 
-## 4. 8 个 Skill 一览
+## 4. 9 个 Skill 一览
 
 | Skill | 一句话 | 主要触发关键词 |
 |-------|--------|----------------|
@@ -127,6 +131,7 @@
 | `unit-test-generator` | 五类场景全覆盖、含中文方法级注释的 UT | "写单测"、"UT"、"提升覆盖率" |
 | `tdd-impl-generator` | 填 TODO，TODO 零残留硬约束 | "实现业务逻辑"、"填 TODO"、"补全代码" |
 | `design-code-consistency-checker` | 设计 ↔ 代码九维度双向核对，五档严重度 | "设计与代码对比"、"一致性审计"、"漂移检测" |
+| `code-issue-reviewer` | SRE 视角 13 维稳定性问题扫描，只审计不改代码 | "代码检视"、"上线前检查"、"production readiness"、"找隐患" |
 | `business-logging` | 商业系统日志审视/补全，禁新框架、禁 emoji | "加日志"、"补日志"、"日志规范" |
 | `software-diagram` | Mermaid / PlantUML 多种图形，含校验 | "画类图/时序图/流程图/UML" |
 | `plan-and-execute-by-subagent` | 通用大规模代码生成子代理调度模板 | "按设计文档批量生成"、"大规模代码生成" |
@@ -149,6 +154,8 @@
 
 每个 agent 的 `tools:` 列表在 frontmatter 内**故意收窄**（只放 Bash / Read / Write / Edit / Glob / Grep / Skill / Agent 这一组），不会在跨阶段扩权。
 
+> **注**：`code-issue-reviewer` 是横切型 Skill，**没有专属 agent 包装**——直接 `/code-issue-reviewer` 调起即可。设计上它"不自动调用其他 skill / agent"，所有"建议下一步"以 TODO 形式写入交付报告，由用户决定是否切到 `/tdd-impl-runner`、`/security-review` 等。
+
 ---
 
 ## 6. 怎么用
@@ -169,6 +176,7 @@
 > /tdd-impl-runner
 > /unit-test-runner
 > /commit-change-summarizer
+> /code-issue-reviewer
 ```
 
 ### 6.2 在 OpenCode 中

@@ -1,0 +1,118 @@
+# Postmortem: <短标题>
+
+- **Date of incident**: YYYY-MM-DD
+- **Severity**: SEV-N
+- **Detected by**: <监控 / 用户报障 / 巡检 / 自检>
+- **Detected at**: HH:MM (TZ)
+- **Mitigated at**: HH:MM (TZ)
+- **Resolved at**: HH:MM (TZ)
+- **Author**: <handle 或 claude-session>
+- **Status**: draft / under-review / final
+- **Linked lessons**: L-NNN, L-MMM（在 categories/ 中沉淀的可推广经验）
+
+---
+
+## TL;DR
+
+3~5 句概括。读者只读这一段也能知道发生了什么、影响了什么、最后怎么收的。
+
+---
+
+## Impact
+
+- **用户影响**：谁受影响、多少人 / 多少流量、多久
+- **数据影响**：是否丢数 / 错数 / 不一致；恢复方式
+- **财务影响**：估算 or 不可知（脱敏：用范围而非精确金额）
+- **信誉影响**：对外可见性（用户感知 / 工单数 / 媒体）
+- **二级影响**：上下游链路是否被拖累
+
+---
+
+## Timeline
+
+> 时间统一用 **UTC+8 / Asia-Shanghai** 或团队约定时区，括号内可标 UTC。
+
+| Time | Event | Source |
+|------|-------|--------|
+| HH:MM | 部署 commit `<hash>` 上线 | CI |
+| HH:MM | 监控 `<dashboard-name>` 触发告警 | Grafana |
+| HH:MM | 值班发现，开始排查 | oncall |
+| HH:MM | 定位为 X 模块；尝试缓解 | debug |
+| HH:MM | 缓解生效（流量恢复） | incident channel |
+| HH:MM | 修复合入并完成滚动重启 | CI |
+| HH:MM | 复盘会启动 | meeting |
+
+---
+
+## What happened
+
+事实层面发生了什么。**只描述事实**，不做归因。
+
+---
+
+## Why it happened — root cause analysis
+
+- **主因**：核心触发条件 + 根本机制
+- **次因**：放大 / 加速 / 隐藏的因素
+- **触发条件**：什么样的输入 / 流量 / 配置触发了主因
+- **为什么没在更早阶段被发现**：
+  - 单测层面：是否有覆盖？为什么没覆盖？
+  - 集成测试 / 灰度：是否有覆盖？
+  - 生产监控：是否有指标？为什么没告警？
+
+> 复盘文化：**对事不对人**。语言聚焦"系统 / 流程 / 工具"而非"谁的责任"。
+
+---
+
+## What went well
+
+哪些响应有效？哪些工具 / 文档 / 人帮上了忙？要表扬什么？
+
+---
+
+## What went poorly
+
+哪些响应低效 / 缺失？延迟在哪一步？沟通在哪一步卡住？哪个工具不好用？
+
+---
+
+## Action items
+
+| Owner | Action | Due | Tracking | Linked Lesson |
+|-------|--------|-----|----------|----------------|
+| `<handle>` | 加入限流（Redis SETNX 信号量） | YYYY-MM-DD | `<ticket>` | L-NNN |
+| `<handle>` | 把 X 监控阈值从 95p > 1s 调到 99p > 500ms | YYYY-MM-DD | `<ticket>` | L-MMM |
+
+> 每条 Action item **必须有 owner 和 due date**，否则等于没写。
+
+---
+
+## Lessons distilled
+
+> ⭐ 本段是 postmortem 与 lessons 的桥梁。
+
+从本次事件中抽离出 **0~N** 条**可推广教训**。每条都应当：
+1. 抽象成与本次具体场景无关的规则
+2. 走 `lesson-curator` skill 入库到对应 `categories/<x>.md`
+3. 在本 postmortem 的 "Linked lessons" 段反向引用 lesson ID
+
+如果本次事件没有可推广教训（很罕见），**直接写"无"**——postmortem 仍然有事件审计价值，不强求每次都派生 lesson。
+
+---
+
+## Notes
+
+- 本次事件的额外背景
+- 外部依赖 / 第三方因素
+- 组织协作问题
+- 与历史类似事件的差异
+- 后续需要复核的触发条件
+
+---
+
+## References
+
+- 工单：`<ticket-id>`（脱敏）
+- 监控面板：`<dashboard-link>`（脱敏）
+- 关键 commit：`<short-hash>`
+- 相关 PR：`#<n>`

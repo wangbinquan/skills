@@ -1,0 +1,43 @@
+# Deprecated / Superseded Lessons Index
+
+> 本文件保留所有"离开 active 流"的经验的最小可追溯记录。
+> 物理条目本体已移到 `archive/<category>.md`；本文件只做索引。
+> ID **永不复用**——即便条目被废弃，其 ID 也不会被新条目重新分配。
+
+---
+
+## Schema
+
+每条记录包含：
+
+| 字段 | 含义 |
+|------|------|
+| `ID` | 被废弃 / 取代的 lesson ID |
+| `Date` | 状态变更日期（YYYY-MM-DD） |
+| `Old → New status` | 从原状态到新状态的转变 |
+| `Reason` | 一句话原因 |
+| `Replacement` | 替代条目 ID（如有；deprecate 但无替代时填 "-"） |
+| `Archive location` | 物理位置（archive/<category>.md） |
+
+---
+
+## Records
+
+| ID | Date | Old → New status | Reason | Replacement | Archive location |
+|----|------|------------------|--------|-------------|-------------------|
+
+<!--
+例：
+| L-003 | 2026-04-27 | validated → superseded | 旧建议在新框架下不再适用，timer 泄漏 | L-019 | archive/concurrency.md |
+| L-005 | 2026-04-30 | active → deprecated | 框架已替换为 X，原代码不存在 | - | archive/api-contract.md |
+-->
+
+_no deprecated lessons yet_
+
+---
+
+## How to use
+
+- 历史 PR / commit / 评论引用了一个 ID 但找不到 → 来这里查
+- 想审计为什么某条 lesson 被淘汰 → 这里有最简版原因；详情进 archive/<x>.md 看完整条目
+- 想统计经验淘汰率 / 治理质量 → 这里是数据源

@@ -1,0 +1,24 @@
+# <Category Display Name> Lessons
+
+> 主分类 ID：`<category-id>`
+> 范围：<一句话说明本分类涵盖什么；从 taxonomy.md 复制对应行的"涵盖范围"列>
+> 详细分类法：[../taxonomy.md](../taxonomy.md)
+
+> 入库前必读（来自 lesson-curator skill）：
+> - `lesson-template.md`（条目模板与字段语义）
+> - `conflict-resolution.md`（候选检索与冲突消解）
+> - `quality-gates.md`（质量门槛与价值判定）
+
+---
+
+## Conventions
+
+- 条目按 `L-NNN` **倒序**排列（最新在最上方）
+- 状态为 `superseded` / `deprecated` 的条目应已被移到 `../archive/<category-id>.md`
+- 修改本文件时**必须同步**更新 `../INDEX.md` 的计数与索引行
+
+---
+
+<!-- 新条目按 ID 倒序追加在此分隔线下方 -->
+
+_no lessons in this category yet_

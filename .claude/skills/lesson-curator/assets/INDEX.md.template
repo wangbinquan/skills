@@ -1,0 +1,113 @@
+# Lessons Index — Engineering Lessons Knowledge Base
+
+> 经验仓入口。Claude 在 `lesson-curator` skill 触发时**必读**本文件做候选检索。
+> 维护策略：每次新增 / 合并 / 状态变更后**立即更新**；条目按时间倒序排列（最新在前）。
+
+## Repository
+
+- Path: `.claude/lessons/`
+- Last updated: <YYYY-MM-DD>
+- **Next ID**: `L-001`
+- Total lessons: 0
+  - active: 0
+  - validated: 0
+  - stable: 0
+  - superseded: 0
+  - deprecated: 0
+
+---
+
+## By category（主分类索引，17 项）
+
+| Category | File | active | validated | stable | total |
+|----------|------|--------|-----------|--------|-------|
+| null-safety | [categories/null-safety.md](categories/null-safety.md) | 0 | 0 | 0 | 0 |
+| resource-leak | [categories/resource-leak.md](categories/resource-leak.md) | 0 | 0 | 0 | 0 |
+| concurrency | [categories/concurrency.md](categories/concurrency.md) | 0 | 0 | 0 | 0 |
+| performance | [categories/performance.md](categories/performance.md) | 0 | 0 | 0 | 0 |
+| memory | [categories/memory.md](categories/memory.md) | 0 | 0 | 0 | 0 |
+| error-handling | [categories/error-handling.md](categories/error-handling.md) | 0 | 0 | 0 | 0 |
+| external-resilience | [categories/external-resilience.md](categories/external-resilience.md) | 0 | 0 | 0 | 0 |
+| api-contract | [categories/api-contract.md](categories/api-contract.md) | 0 | 0 | 0 | 0 |
+| data-consistency | [categories/data-consistency.md](categories/data-consistency.md) | 0 | 0 | 0 | 0 |
+| boundary | [categories/boundary.md](categories/boundary.md) | 0 | 0 | 0 | 0 |
+| observability | [categories/observability.md](categories/observability.md) | 0 | 0 | 0 | 0 |
+| config-environment | [categories/config-environment.md](categories/config-environment.md) | 0 | 0 | 0 | 0 |
+| time-encoding | [categories/time-encoding.md](categories/time-encoding.md) | 0 | 0 | 0 | 0 |
+| security | [categories/security.md](categories/security.md) | 0 | 0 | 0 | 0 |
+| testing | [categories/testing.md](categories/testing.md) | 0 | 0 | 0 | 0 |
+| build-tooling | [categories/build-tooling.md](categories/build-tooling.md) | 0 | 0 | 0 | 0 |
+| process-collab | [categories/process-collab.md](categories/process-collab.md) | 0 | 0 | 0 | 0 |
+
+---
+
+## By tag（多维标签反向索引）
+
+### lang
+- `lang:java` — _none_
+- `lang:python` — _none_
+- `lang:go` — _none_
+- `lang:cpp` — _none_
+- `lang:scala` — _none_
+- `lang:rust` — _none_
+- `lang:javascript` — _none_
+- `lang:typescript` — _none_
+
+### severity
+- `severity:blocker` — _none_
+- `severity:critical` — _none_
+- `severity:major` — _none_
+- `severity:minor` — _none_
+- `severity:info` — _none_
+
+### layer
+- `layer:infrastructure` — _none_
+- `layer:framework` — _none_
+- `layer:business` — _none_
+- `layer:datastore` — _none_
+- `layer:ui` — _none_
+
+### source
+- `source:incident` — _none_
+- `source:debug` — _none_
+- `source:review` — _none_
+- `source:postmortem` — _none_
+- `source:perfteam` — _none_
+- `source:secaudit` — _none_
+- `source:userreport` — _none_
+
+---
+
+## All lessons (chronological — most recent first)
+
+<!--
+每行格式：
+- L-NNN [YYYY-MM-DD] [<category>] [<status>] <一句话摘要> — categories/<x>.md#l-nnn
+
+例：
+- L-002 [2026-04-27] [concurrency] [active] sync.Once 在 panic 后不会再次执行 — categories/concurrency.md#l-002
+- L-001 [2026-04-26] [error-handling] [validated] retry 没有指数退避导致雪崩 — categories/error-handling.md#l-001
+-->
+
+_no lessons yet_
+
+---
+
+## Cross-links
+
+- DEPRECATED log: [DEPRECATED.md](DEPRECATED.md)
+- Postmortems: [postmortems/](postmortems/)
+- Taxonomy: [taxonomy.md](taxonomy.md)
+- Skill source: `.claude/skills/lesson-curator/`
+
+---
+
+## How to read this file
+
+- 想找某主题的全部 lessons → "By category" 段，点对应 file 链接
+- 想按语言 / 严重度 / 层次过滤 → "By tag" 段
+- 想按时间看最近沉淀了什么 → "All lessons" 段
+- 想看历史已废弃的经验 → DEPRECATED.md
+- 想看完整事故复盘 → postmortems/
+
+> 本文件由 `lesson-curator` skill 自动维护。手工编辑时请保持表格 / 列表格式，并同步更新计数与 Next ID。

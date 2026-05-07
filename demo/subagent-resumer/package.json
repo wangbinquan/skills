@@ -1,0 +1,14 @@
+{
+  "name": "subagent-resumer",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    "./server": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": "*",
+    "@opencode-ai/sdk": "*"
+  }
+}
